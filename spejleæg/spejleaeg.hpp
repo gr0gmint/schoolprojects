@@ -34,5 +34,7 @@ class SpejleaegBot : public ConnectionListener
     public:
         virtual void onConnect();
         virtual bool onTLSConnect( const CertInfo& info);
-        SpejleaegBot (string& username, string & password);
+        SpejleaegBot (JID* jid, string & password);
+        
+        void start();
 }
