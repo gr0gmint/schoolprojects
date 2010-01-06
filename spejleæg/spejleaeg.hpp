@@ -13,6 +13,7 @@ class SpejleaegPresence : public PresenceHandler
     public:
         virtual void handlePresence( const Presence& presence );s
 }
+
 class SpejleaegBot : public ConnectionListener
 {
     public:
