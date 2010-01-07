@@ -6,7 +6,6 @@
 #include <gloox/messagesession.h>
 #include <gloox/uniquemucroom.h>
 
-
 using namespace gloox;
 
 
@@ -28,13 +27,15 @@ class SpejleaegCommandHandler : public MessageSessionHandler
 	
 }
 
-class SpejleaegBot : public ConnectionListener
+class SpejleaegBot : public ConnectionListener, PresenceHandler
 {
-	JID jid;
+	JID* jid;
+	string password;
+	
     public:
         virtual void onConnect();
         virtual bool onTLSConnect( const CertInfo& info);
         SpejleaegBot (JID* jid, string & password);
         
-        void start();
+        void connect();
 }
