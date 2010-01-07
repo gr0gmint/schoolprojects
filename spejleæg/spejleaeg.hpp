@@ -20,18 +20,14 @@ class SpejleaegBot : public ConnectionListener, PresenceHandler
         virtual void onConnect();
         virtual void onDisconnect(ConnectionError e);
         virtual bool onTLSConnect( const CertInfo& info);
-        SpejleaegBot (JID* jid, string & password);
+        
+        virtual void handlePresence(Presence* presence);
+        
+        SpejleaegBot (string& jid, string & password);
         
         
         void start();
 }
-
-class SpejleaegPresence : public PresenceHandler
-{
-    public:
-        virtual void handlePresence( const Presence& presence );
-}
-
 class SpejleaegSpil
 {
 	

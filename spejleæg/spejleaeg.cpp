@@ -3,23 +3,30 @@
 #include "states.hpp"
 
 void SpejleaegBot::connect() {
-	this.client = new Client(this.jid, this.password);
 	this.connect();
 }
 
 void SpejleaegBot::onConnect()
 {
+	this.state = BOT_CONNECTED;
 }
 void SpejleaegBot::onDisconnect(ConnectionError e)
 {
+	this.state = BOT_DISCONNECTED;
 }
-void SpejleaegBot::onTLSConnect( const CertInfo& info)
+bool SpejleaegBot::onTLSConnect( const CertInfo& info )
 {
+	return true;
 }
 
-SpejleaegBot::SpejleaegBot(JID* jid, string& password)
+SpejleaegBot::SpejleaegBot(string& jid, string& password)
 {
-	this.jid = jid;
+	this.jid = new JID(jid);
 	this.password = password;
-	this.state
+	this.client = new Client(this.jid, this.password);
+	this.state = BOT_DEAD;
 }
+
+void SpejleaegBot::handlePresence(Presence* presence) {
+}
+
