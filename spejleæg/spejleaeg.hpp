@@ -37,9 +37,9 @@ class SpejleaegBot : public ConnectionListener, PresenceHandler, MessageSessionH
         virtual void onConnect();
         virtual void onDisconnect(ConnectionError e);
         virtual bool onTLSConnect( const CertInfo& info);
+        virtual void handleMessageSession(MessageSession * session);
         
         virtual void handlePresence(const Presence& presence);
-        virtual void handleMessageSession(MessageSession * session);
         
         SpejleaegBot (JID* jid, string & password);
         ~SpejleaegBot ();
