@@ -13,12 +13,15 @@ class SpejleaegBot : public ConnectionListener, PresenceHandler
 {
 	JID* jid;
 	string password;
+	Client* client;
 	int32_t state;
 		
     public:
         virtual void onConnect();
+        virtual void onDisconnect(ConnectionError e);
         virtual bool onTLSConnect( const CertInfo& info);
         SpejleaegBot (JID* jid, string & password);
+        
         
         void start();
 }
