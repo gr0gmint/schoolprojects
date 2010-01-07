@@ -9,5 +9,5 @@ SpejleaegBot::SpejleaegBot(JID* jid, string& password)
 {
 	this.jid = jid;
 	this.password = password;
-	
+	this.state
 }

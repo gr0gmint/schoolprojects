@@ -5,9 +5,23 @@
 #include <gloox/connectionlistener.h>
 #include <gloox/messagesession.h>
 #include <gloox/uniquemucroom.h>
+#include <stdint.h>
 
 using namespace gloox;
 
+class SpejleaegBot : public ConnectionListener, PresenceHandler
+{
+	JID* jid;
+	string password;
+	int32_t state;
+		
+    public:
+        virtual void onConnect();
+        virtual bool onTLSConnect( const CertInfo& info);
+        SpejleaegBot (JID* jid, string & password);
+        
+        void start();
+}
 
 class SpejleaegPresence : public PresenceHandler
 {
@@ -27,15 +41,3 @@ class SpejleaegCommandHandler : public MessageSessionHandler
 	
 }
 
-class SpejleaegBot : public ConnectionListener, PresenceHandler
-{
-	JID* jid;
-	string password;
-	
-    public:
-        virtual void onConnect();
-        virtual bool onTLSConnect( const CertInfo& info);
-        SpejleaegBot (JID* jid, string & password);
-        
-        void connect();
-}
