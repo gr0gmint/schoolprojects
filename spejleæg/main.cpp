@@ -1,6 +1,11 @@
 #include <iostream>
 #include <ctime>
 #include "spejleaeg.hpp"
+#include <gloox/jid.h>
+#include <string>
+
+using namespace gloox;
+using namespace std;
 
 int main (int argc, char * argv[]) {
 	
@@ -10,12 +15,17 @@ int main (int argc, char * argv[]) {
 		std::cout << "Usage:\nspejleaeg <XMPP-login> [<MUC-server>]\n";
 		return -1;
 	}
-	JID jid ( string(argv[1]) );
-	if (!jid) {
-		std::cout << "XMPP-login is invalid\n";
+	string ggnore = argv[1];
+	JID jid (ggnore);
+	if (!(jid)) {
+		std::cout << "XMPP-login er ugyldigt\n";
 		return -1;
 	}
-	std::cout << "Indtast password: ";
+	if (jid.resource().empty()) {
+		jid.setResource("ff");
+	}
+	std::cout << "Indtast kodeord: ";
 	std::cin >> password;
-	SpejleaegBot* bot = new SpejleaegBot(jid,)
+	SpejleaegBot* bot = new SpejleaegBot(&(jid),password);
+	bot->connect();
 }

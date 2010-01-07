@@ -1,32 +1,40 @@
 #include "spejleaeg.hpp"
 #include <gloox/client.h>
 #include "states.hpp"
+#include <string>
 
 void SpejleaegBot::connect() {
-	this.connect();
+	this->client->connect();
+	this->state = BOT_CONNECTING;
 }
 
 void SpejleaegBot::onConnect()
 {
-	this.state = BOT_CONNECTED;
+	this->state = BOT_CONNECTED;
 }
 void SpejleaegBot::onDisconnect(ConnectionError e)
 {
-	this.state = BOT_DISCONNECTED;
+	this->state = BOT_DISCONNECTED;
 }
 bool SpejleaegBot::onTLSConnect( const CertInfo& info )
 {
 	return true;
 }
 
-SpejleaegBot::SpejleaegBot(string& jid, string& password)
+SpejleaegBot::SpejleaegBot(JID* jid, string& password)
 {
-	this.jid = new JID(jid);
-	this.password = password;
-	this.client = new Client(this.jid, this.password);
-	this.state = BOT_DEAD;
+	this->jid = jid;
+	this->password = password;
+	this->client = new Client(*(this->jid), this->password);
+	this->client->registerConnectionListener( this );
+	this->client->registerPresenceHandler( this );
+	this->state = BOT_DEAD;
 }
 
-void SpejleaegBot::handlePresence(Presence* presence) {
+SpejleaegBot::~SpejleaegBot(){
+	
 }
 
+void SpejleaegBot::handlePresence(const Presence& presence) {
+	
+}
