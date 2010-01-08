@@ -55,13 +55,9 @@ void SpejleaegBot::handleMessage( const Message& message, MessageSession* sessio
 	std::cout << "Got a message:\n";
 	std::cout << "Thread: " << message.thread() << std::endl;
 	std::cout << "Body: " << message.body() << "\n\n";
-	if (session) {
-		string body = "penis";
-		Message::MessageType msgtype;
-		msgtype = Message::Chat;
-		Message reply (msgtype, session->target(), body, EmptyString, message.thread(), EmptyString);
-		this->client->send(reply);
+	string body = message->body();
+	if (body == "make") {
+		SpejleaegSpil* game = new SpejleaegSpil(this->client);
 	}
-	else
-		std::cout << "Weird, session = 0\n";
 }
+
