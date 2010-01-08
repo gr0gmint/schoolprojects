@@ -2,6 +2,7 @@
 #include <gloox/client.h>
 #include <gloox/messagesession.h>
 #include <gloox/messagesessionhandler.h>
+#include <gloox/messagehandler.h>
 #include "states.hpp"
 #include <string>
 #include <iostream>
@@ -32,6 +33,7 @@ SpejleaegBot::SpejleaegBot(JID* jid, string& password)
 	this->client = new Client(*(this->jid), this->password);
 	this->client->registerConnectionListener( this );
 	this->client->registerPresenceHandler( this );
+	this->client->registerMessageHandler( this);
 	this->client->registerMessageSessionHandler( this);
 	this->state = BOT_DEAD;
 }
@@ -42,4 +44,15 @@ SpejleaegBot::~SpejleaegBot(){
 
 void SpejleaegBot::handlePresence(const Presence& presence) {
 	std::cout << "A presence stanza was received\n";
+}
+
+void SpejleaegBot::handleMessageSession( MessageSession * session)
+{
+	
+	std::cout << "Message session created\n";
+}
+void SpejleaegBot::handleMessage( const Message& message, MessageSession* session) {
+	std::cout << "Got a message\n";
+	if (!session)
+		std::cout << "Weird, session = 0\n";
 }

@@ -1,6 +1,6 @@
 #include "spejleaeg.hpp"
 
-SpejleaegCommandHandler::handleMessageSession(MessageSession * session)
+SpejleaegCommandHandler::handleMessage(Message * message)
 {
 	
 }
