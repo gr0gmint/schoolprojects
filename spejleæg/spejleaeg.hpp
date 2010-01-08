@@ -33,8 +33,8 @@ class SpejleaegSpil : public MUCRoomHandler
 		virtual void handleMUCError(MUCRoom* room, StanzaError error);
 		virtual void handleMUCInfo(MUCRoom* room, int features, const string& name, const DataForm* infoForm);
 		virtual void handleMUCItems(MUCRoom* room, const Disco::ItemList& items);
-		SpejleaegSpil (JID& jid);
-		SpejleaegSpil (vector<JID> jids);
+		SpejleaegSpil (Client* client, JID& jid);
+		SpejleaegSpil (Client* client, vector<JID> jids);
 		//~SpejleaegSpil();
 };
 

@@ -1,4 +1,3 @@
-
 #include <gloox/client.h>
 #include <gloox/messagesession.h>
 #include <gloox/messagesessionhandler.h>
@@ -60,4 +59,3 @@ void SpejleaegBot::handleMessage( const Message& message, MessageSession* sessio
 		SpejleaegSpil* game = new SpejleaegSpil(this->client);
 	}
 }
-
