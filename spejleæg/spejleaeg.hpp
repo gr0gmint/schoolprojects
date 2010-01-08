@@ -7,6 +7,7 @@
 #include <gloox/messagesession.h>
 #include <gloox/messagesessionhandler.h>
 #include <gloox/messagehandler.h>
+#include <gloox/message.h>
 #include <gloox/uniquemucroom.h>
 #include <stdint.h>
 #include <vector>
