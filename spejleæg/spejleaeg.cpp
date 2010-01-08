@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include "spejleaeg.hpp"
+#include "spil.hpp"
 
 void SpejleaegBot::connect() {
 	this->client->connect();
@@ -54,8 +55,8 @@ void SpejleaegBot::handleMessage( const Message& message, MessageSession* sessio
 	std::cout << "Got a message:\n";
 	std::cout << "Thread: " << message.thread() << std::endl;
 	std::cout << "Body: " << message.body() << "\n\n";
-	string body = message->body();
-	if (body == "make") {
-		SpejleaegSpil* game = new SpejleaegSpil(this->client);
-	}
+	string body = message.body();
+//	if (body == "make") {
+		SpejleaegSpil* game = new SpejleaegSpil(this->client, session->target());
+//	}
 }

@@ -1,3 +1,6 @@
+#ifndef _SPEJLEAEG_HPP
+#define _SPEJLEAEG_HPP
+
 #include <gloox/gloox.h>
 #include <gloox/jid.h>
 #include <gloox/presence.h>
@@ -8,35 +11,13 @@
 #include <gloox/messagesessionhandler.h>
 #include <gloox/messagehandler.h>
 #include <gloox/message.h>
-#include <gloox/uniquemucroom.h>
 #include <gloox/disco.h>
 #include <stdint.h>
 #include <vector>
+#include "spil.hpp"
 
 using namespace gloox;
 using namespace std;
-
-
-class SpejleaegSpil : public MUCRoomHandler
-{
-	Client* client;
-	
-	vector <JID> players;
-	
-	
-	public:
-		virtual void handleMUCParticipantPresence(MUCRoom* room, const MUCRoomParticipant participant, const Presence& presence);
-		virtual void handleMUCMessage(MUCRoom* room, const Message& msg, bool priv);
-		virtual void handleMUCRoomCreation(MUCRoom* room);
-		virtual void handleMUCSubject(MUCRoom* room, const string& nick, const string& subject);
-		virtual void handleMUCInviteDecline(MUCRoom* room, const JID& invitee, const string& reason);
-		virtual void handleMUCError(MUCRoom* room, StanzaError error);
-		virtual void handleMUCInfo(MUCRoom* room, int features, const string& name, const DataForm* infoForm);
-		virtual void handleMUCItems(MUCRoom* room, const Disco::ItemList& items);
-		SpejleaegSpil (Client* client, JID& jid);
-		SpejleaegSpil (Client* client, vector<JID> jids);
-		//~SpejleaegSpil();
-};
 
 
 class SpejleaegBot : public ConnectionListener, PresenceHandler,
@@ -47,6 +28,7 @@ class SpejleaegBot : public ConnectionListener, PresenceHandler,
 	Client* client;
 	int32_t state;
 	vector <SpejleaegSpil> games;
+	
 	
 	private:
 		
@@ -63,3 +45,5 @@ class SpejleaegBot : public ConnectionListener, PresenceHandler,
         
         void connect();
 };
+
+#endif
