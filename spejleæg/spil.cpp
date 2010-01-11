@@ -1,15 +1,32 @@
 #include "spejleaeg.hpp"
 #include "states.hpp"
-
-
+#include <boost/regex.h>
 #include <iostream>
 
 void SpejleaegSpil::handleMUCParticipantPresence(MUCRoom* room, const MUCRoomParticipant participant, const Presence& presence)
 {
-	std::cout << "handleMUCParticipantPresence - " << participant.nick->resource() <<"\n";
-	if (participant.nick->resource() == "ggbot") {
-		this->room->invite(this->invitees[0], "JOIN ME FOR LULZ");
+	//Presence::PresenceType ptype;
+	//ptype == Presence::Chat
+	
+	std::cout << "handleMUCParticipantPresence:\n    nick:" << participant.nick->full() <<"\n";
+	if (presence.presence() != Presence::Unavailable) {
+		
+		//Denne kode bliver kørt når vi selv har joinet rummet.
+		if (participant.nick->resource() == "æggebot") {
+			this->room->setSubject("Æggemad");
+			this->state = GAME_FIRSTINVITE;
+			this->room->invite(this->invitees[0], "Spil spejleæg!");
+		} else {
+			if (this->state == GAME_FIRSTINVITE) {
+				this->moderator = participant.nick;
+			}
+		}
+	} else {	//Participanten er gået ud af 
+		if (participant.nick->resource() == "æggebot") {
+			std::cout << "Vi blev smidt ud af rummet? \n";
+		}
 	}
+	
 }
 void SpejleaegSpil::handleMUCMessage(MUCRoom* room, const Message& msg, bool priv)
 {
@@ -45,8 +62,7 @@ SpejleaegSpil::SpejleaegSpil (Client* client, const JID& invitee) {
 	this->client = client;
 	this->state = GAME_INITIAL;
 	this->invitees.push_back(invitee);
-	JID nick("conference.jabber.org/ggbot");
+	JID nick("conference.jabber.org/æggebot");
 	this->room = new UniqueMUCRoom(client, nick, this);
 	this->room->join();
 }
-

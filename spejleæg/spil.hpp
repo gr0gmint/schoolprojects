@@ -20,6 +20,7 @@ class SpejleaegSpil : public MUCRoomHandler
 	Client* client;
 	vector <JID> invitees;
 	vector <JID> players;
+	JID moderator;
 	vector <short> playereggs;
 	bool eggholes[5];
 	short turn;

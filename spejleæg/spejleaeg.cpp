@@ -56,7 +56,7 @@ void SpejleaegBot::handleMessage( const Message& message, MessageSession* sessio
 	std::cout << "Thread: " << message.thread() << std::endl;
 	std::cout << "Body: " << message.body() << "\n\n";
 	string body = message.body();
-//	if (body == "make") {
+	if (body == "make") {
 		SpejleaegSpil* game = new SpejleaegSpil(this->client, session->target());
-//	}
+	}
 }

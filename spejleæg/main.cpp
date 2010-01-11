@@ -22,7 +22,7 @@ int main (int argc, char * argv[]) {
 		return -1;
 	}
 	if (jid.resource().empty()) {
-		jid.setResource("ff");
+		jid.setResource("eggbot");
 	}
 	std::cout << "Indtast kodeord: ";
 	std::cin >> password;
