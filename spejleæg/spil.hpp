@@ -30,7 +30,7 @@ class SpejleaegSpil : public MUCRoomHandler
 	Client* client;				
 	vector <JID> invitees;		//Liste over folk der skal inviteres til spillet
 	vector <JID> players;		//Spillerne
-	JID moderator;				//JID på moderatoren
+	JID* moderator;				//JID på moderatoren
 	vector<short> *playereggs;	//Hvor mange æg hver spiller har. Er i samme rækkefølge tilsvarende til SpejleaegSpil::players
 	bool eggholes[5]; 			//De 5 huller som kan være fyldt et æg
 	short turn;					//Hvems tur er det

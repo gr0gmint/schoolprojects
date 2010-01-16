@@ -1,9 +1,9 @@
 #include "spejleaeg.hpp"
 #include "states.hpp"
-#include <boost/regex.h>
+#include <boost/regex.hpp>
 #include <iostream>
 
-boost::regex splitter("(\\w)((?=\\s)[\\w\\d])*");
+using namespace gloox;
 
 void SpejleaegSpil::handleMUCParticipantPresence(MUCRoom* room, const MUCRoomParticipant participant, const Presence& presence)
 {
@@ -21,11 +21,13 @@ void SpejleaegSpil::handleMUCParticipantPresence(MUCRoom* room, const MUCRoomPar
 			
 		} else if (this->state == GAME_FIRSTINVITE) {
 			//Moderatoren har joinet rummet
-			this->moderator = participant.nick;
+			this->moderator = new JID(participant.nick->full());
+			MUCRoomRole role = RoleModerator;
+			this->room->setRole(participant.nick->resource(), role);
 			this->state = GAME_INVITEPHASE;
 			
 			
-			this->room->send("For at invitere andre til spillet, skriv 'invite <JID> ... '");
+			this->room->send("Invitér flere spillere for at spille");
 		}
 	} else { 
 		if (participant.nick->resource() == "æggebot") {
@@ -38,11 +40,56 @@ void SpejleaegSpil::handleMUCParticipantPresence(MUCRoom* room, const MUCRoomPar
 }
 void SpejleaegSpil::handleMUCMessage(MUCRoom* room, const Message& msg, bool priv)
 {
-	vector<string> command;
+	string command;
+	vector<string> arguments;
+
+	
+	boost::regex valid_command ("([\\w\\d]+)(\\s+(.*))?");
+	boost::regex argument ("(.+)(\\s+(.*))?");
+	string suffix;
 	boost::smatch what;
-	if (!priv) {
-		if (boost::regex_match(msg.body(), what, splitter, boost::match_extra)) {
+	boost::smatch argmatch;
+	JID* invitee;
+	int i;
+	
+	std::cout << msg.from().resource() <<" - " << msg.body() << std::endl; 
+	if (!priv && msg.from().resource() != "æggebot") {
+		
+		//Først tjek om det er en gyldig kommando
+		if (boost::regex_match(msg.body(), what, valid_command, boost::match_default)) {
+			std::cout << "Command: " << what[1] << "!"<<std::endl;
+			command = what[1];
+			suffix = what[3];
+				do 
+				{
+					if (regex_match(suffix, argmatch, argument, boost::match_default)) {
+						arguments.push_back(argmatch[1]);
+						suffix = argmatch[3];
+						continue;
+					} else {
+						break;
+					}
+				}	while (true);
+			bool unknown_command = false;
 			
+			//Kommandoer med uspecificeret antal argumenter kodes her:
+
+
+			//Kommandoer med 0 argumenter kodes her:
+			if (arguments.size() == 0) {
+				if        ( command == "start") {
+				} else if ( command == "stop") {
+				} else if ( command == "roll") {
+				} else {
+					unknown_command = true;
+				}
+			//Kommandoer med 1 argument kodes her:
+			} else if (arguments.size() == 1) {
+				if        ( command == "kick") {
+				}
+			}
+			if (unknown_command)
+				room->send("Ukendt kommando!");
 		} else {
 			room->send("Ugyldig kommando!");
 		}
