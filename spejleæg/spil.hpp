@@ -48,7 +48,7 @@ class SpejleaegSpil : public MUCRoomHandler
 		SpejleaegSpil (Client* client, const JID& invitee);
 		//~SpejleaegSpil();
 		
-		void handleCommand(MUCRoom* room, const Message& msg, bool priv, const string &cmd, const vector <string> &arguments);
+		void handleCommand(const Message& msg, bool priv, const string &cmd, const vector <string> &arguments);
 };
 
 #endif

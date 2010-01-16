@@ -3,7 +3,7 @@
 #include <boost/regex.h>
 #include <iostream>
 
-boost::regex splitter("^(\w)\s([\\w\\d(?=\s))*");
+boost::regex splitter("(\\w)((?=\\s)[\\w\\d])*");
 
 void SpejleaegSpil::handleMUCParticipantPresence(MUCRoom* room, const MUCRoomParticipant participant, const Presence& presence)
 {
@@ -23,20 +23,30 @@ void SpejleaegSpil::handleMUCParticipantPresence(MUCRoom* room, const MUCRoomPar
 			//Moderatoren har joinet rummet
 			this->moderator = participant.nick;
 			this->state = GAME_INVITEPHASE;
-			vector<cmd_callback> *invitephase_cmdset = new vector<cmd_callback>;
-			invitephase_cmdset->push_back(&moderator::invite);
+			
 			
 			this->room->send("For at invitere andre til spillet, skriv 'invite <JID> ... '");
 		}
-	} else {	//Participanten er gået ud af 
+	} else { 
 		if (participant.nick->resource() == "æggebot") {
 			std::cout << "Blev smidt ud af rummet? \n";
+		} else {
+			std::cout << "Stopping the game\n";
 		}
 	}
 	
 }
 void SpejleaegSpil::handleMUCMessage(MUCRoom* room, const Message& msg, bool priv)
 {
+	vector<string> command;
+	boost::smatch what;
+	if (!priv) {
+		if (boost::regex_match(msg.body(), what, splitter, boost::match_extra)) {
+			
+		} else {
+			room->send("Ugyldig kommando!");
+		}
+	}
 	
 	std::cout << "MUC message: [" << msg.subject() << "] - [" << msg.body() << "] \n";
 }
@@ -75,7 +85,7 @@ SpejleaegSpil::SpejleaegSpil (Client* client, const JID& invitee) {
 	this->room->join();
 }
 
-void handleCommand(MUCRoom* room, const Message& msg, bool priv, const string &cmd, const vector <string> &arguments)
+void handleCommand(const Message& msg, bool priv, const string &cmd, const vector <string> &arguments)
 {
 	
 }
