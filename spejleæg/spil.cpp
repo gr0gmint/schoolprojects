@@ -23,14 +23,16 @@ void SpejleaegSpil::handleMUCParticipantPresence(MUCRoom* room, const MUCRoomPar
 			//Moderatoren har joinet rummet
 			this->moderator = new JID(participant.nick->full());
 			MUCRoomRole role = RoleModerator;
+			MUCRoomAffiliation affiliation = AffiliationAdmin;
 			this->room->setRole(participant.nick->resource(), role);
+			this->room->setAffiliation(participant.nick->resource(), affiliation);
 			this->state = GAME_INVITEPHASE;
 			
 			
 			this->room->send("Invitér flere spillere for at spille");
 		}
 	} else { 
-		if (participant.nick->resource() == "æggebot") {
+		if (participant.nick->resource() == "eggbot") {
 			std::cout << "Blev smidt ud af rummet? \n";
 		} else {
 			std::cout << "Stopping the game\n";
@@ -53,7 +55,7 @@ void SpejleaegSpil::handleMUCMessage(MUCRoom* room, const Message& msg, bool pri
 	int i;
 	
 	std::cout << msg.from().resource() <<" - " << msg.body() << std::endl; 
-	if (!priv && msg.from().resource() != "æggebot") {
+	if (!priv && msg.from().resource() != "eggbot") {
 		
 		//Først tjek om det er en gyldig kommando
 		if (boost::regex_match(msg.body(), what, valid_command, boost::match_default)) {
@@ -127,7 +129,7 @@ SpejleaegSpil::SpejleaegSpil (Client* client, const JID& invitee) {
 	this->client = client;
 	this->state = GAME_INITIAL;
 	this->invitees.push_back(invitee);
-	JID nick("conference.jabber.org/æggebot");
+	JID nick("conference.jabber.org/eggbot");
 	this->room = new UniqueMUCRoom(client, nick, this);
 	this->room->join();
 }
