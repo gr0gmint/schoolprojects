@@ -3,15 +3,17 @@
 #include <boost/regex.hpp>
 #include <iostream>
 
+const string BOT_NICK = "eggbot";
+
 using namespace gloox;
+using namespace std;
 
 void SpejleaegSpil::handleMUCParticipantPresence(MUCRoom* room, const MUCRoomParticipant participant, const Presence& presence)
 {
-	//Presence::PresenceType ptype;
-	//ptype == Presence::Chat
 	
 	std::cout << "handleMUCParticipantPresence:\n    nick:" << participant.nick->full() <<"\n";
-	if (presence.presence() != Presence::Unavailable) {
+	
+	if (presence.presence() == Presence::Available) {
 		
 		if (this->state == GAME_INITIAL) {
 			//Denne kode bliver kørt når vi selv har joinet rummet.
@@ -23,18 +25,22 @@ void SpejleaegSpil::handleMUCParticipantPresence(MUCRoom* room, const MUCRoomPar
 			//Moderatoren har joinet rummet
 			this->moderator = new JID(participant.nick->full());
 			MUCRoomRole role = RoleModerator;
-			MUCRoomAffiliation affiliation = AffiliationAdmin;
-			this->room->setRole(participant.nick->resource(), role);
-			this->room->setAffiliation(participant.nick->resource(), affiliation);
+			MUCRoomAffiliation affiliation = AffiliationOwner;
+			string nick = participant.nick->resource();
+			this->room->setRole(nick, role);
+			this->room->setAffiliation(nick, affiliation, "Du er moderator!");
 			this->state = GAME_INVITEPHASE;
 			
 			
 			this->room->send("Invitér flere spillere for at spille");
+		} else {
+			//En spiller har joinet rummet
 		}
-	} else { 
-		if (participant.nick->resource() == "eggbot") {
+	} else if (presence.presence() == Presence::Unavailable) { 
+		if (participant.nick->resource() == BOT_NICK) {
 			std::cout << "Blev smidt ud af rummet? \n";
 		} else {
+			//En 
 			std::cout << "Stopping the game\n";
 		}
 	}
@@ -55,7 +61,7 @@ void SpejleaegSpil::handleMUCMessage(MUCRoom* room, const Message& msg, bool pri
 	int i;
 	
 	std::cout << msg.from().resource() <<" - " << msg.body() << std::endl; 
-	if (!priv && msg.from().resource() != "eggbot") {
+	if (!priv && msg.from().resource() != BOT_NICK) {
 		
 		//Først tjek om det er en gyldig kommando
 		if (boost::regex_match(msg.body(), what, valid_command, boost::match_default)) {
@@ -73,12 +79,17 @@ void SpejleaegSpil::handleMUCMessage(MUCRoom* room, const Message& msg, bool pri
 					}
 				}	while (true);
 			bool unknown_command = false;
+			bool unspecified_argc = false;
 			
 			//Kommandoer med uspecificeret antal argumenter kodes her:
-
+			if (command == "invite" && arguments.size() > 0) {
+				for (i = 0; i < arguments.size(); i++) {
+					this->room->invite(JID(arguments[i]), "Join TEH GAME");
+				}
+			}
 
 			//Kommandoer med 0 argumenter kodes her:
-			if (arguments.size() == 0) {
+			else if (arguments.size() == 0) {
 				if        ( command == "start") {
 				} else if ( command == "stop") {
 				} else if ( command == "roll") {
@@ -88,7 +99,11 @@ void SpejleaegSpil::handleMUCMessage(MUCRoom* room, const Message& msg, bool pri
 			//Kommandoer med 1 argument kodes her:
 			} else if (arguments.size() == 1) {
 				if        ( command == "kick") {
+				} else {
+					unknown_command = true;
 				}
+			} else {
+				unknown_command = true;
 			}
 			if (unknown_command)
 				room->send("Ukendt kommando!");
@@ -129,7 +144,7 @@ SpejleaegSpil::SpejleaegSpil (Client* client, const JID& invitee) {
 	this->client = client;
 	this->state = GAME_INITIAL;
 	this->invitees.push_back(invitee);
-	JID nick("conference.jabber.org/eggbot");
+	JID nick("conference.jabber.org/"+BOT_NICK);
 	this->room = new UniqueMUCRoom(client, nick, this);
 	this->room->join();
 }
