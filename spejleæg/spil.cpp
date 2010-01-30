@@ -33,8 +33,9 @@ void SpejleaegSpil::handleMUCParticipantPresence(MUCRoom* room, const MUCRoomPar
 			
 			
 			this->room->send("Invitér flere spillere for at spille");
-		} else {
-			//En spiller har joinet rummet
+		} else if (this->state == GAME_INVITEPHASE) {
+			JID * lol = new JID(participant.nick->full());
+			this->players.push_back(*lol);
 		}
 	} else if (presence.presence() == Presence::Unavailable) { 
 		if (participant.nick->resource() == BOT_NICK) {
