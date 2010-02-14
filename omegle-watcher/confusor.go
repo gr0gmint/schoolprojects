@@ -137,7 +137,7 @@ func convo(chfromus chan []string,chfromomegle chan []string, die chan bool, nam
             fmt.Printf("Somethings terribly wrong here %s\n ", err)
         }
     } else {
-        fmt.Printf("Error\n")
+        fmt.Printf("Error: %s\n", err)
     }
 }
 func eavesdropper(die chan bool) {

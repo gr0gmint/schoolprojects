@@ -5,9 +5,8 @@ import "io/ioutil"
 import "fmt"
 import "httpv2"
 import "os"
+import "time"
 import "strconv"
-
-const numconvos = 1
 
 type Req struct {
     Resp *httpv2.Response
@@ -65,7 +64,7 @@ func convo(chfromus chan []string,chfromomegle chan []string, die chan bool, nam
                 case r := <-requestChan:
                     if r.Err==nil {
                         data,_ = ioutil.ReadAll(r.Resp.Body)
-  //                      fmt.Printf("%s   ", string(data))
+
                         js,err := json.Decode(string(data))
                         if err != nil { fmt.Printf("JSON Decoding error, %s\n",err); break }
                         if string(data) == "[]" { continue; }
@@ -96,6 +95,8 @@ func convo(chfromus chan []string,chfromomegle chan []string, die chan bool, nam
                                     fmt.Printf("%s disconnected\n", name)
                                     die<-true
                                     return
+                                default:
+                                    fmt.Printf("%s   \n", string(data))
                                   
                             }
                         }
@@ -117,21 +118,22 @@ func convo(chfromus chan []string,chfromomegle chan []string, die chan bool, nam
                     } else if msg[0] == "stopped" {
                         msgbody := "id="+id.(string)
                         sendHeaders := map[string]string{"Content-Length": strconv.Itoa(len(msgbody))}
-                        httpv2.Post("http://omegle.com/stoppedtyping", "application/x-www-form-urlencoded", sendHeaders, &StringReader{data: msgbody} )
+                        httpv2.Post("http://omegle.com/stoppedtyping", "application/x-www-form-urlencoded", sendHeaders, &StringReader{data: msgbody} ) } /*
                     } else if msg[0] == "disconnect" {
                         msgbody := "id="+id.(string)
                         sendHeaders := map[string]string{"Content-Length": strconv.Itoa(len(msgbody))}
+                        
                         httpv2.Post("http://omegle.com/disconnect", "application/x-www-form-urlencoded", sendHeaders, &StringReader{data: msgbody} )
                         die<-true
                         return
-                    }
+                    } */
                 }
             }
         } else {
             fmt.Printf("Somethings terribly wrong here %s\n ", err)
         }
     } else {
-        fmt.Printf("Error\n")
+        fmt.Printf("Error: %s\n", err)
     }
 }
 func eavesdropper(die chan bool) {
@@ -142,43 +144,8 @@ func eavesdropper(die chan bool) {
     die2 := make(chan bool)
     
     go convo(ch1fromus, ch1fromomegle,die2, "Stranger 1")
+    time.Sleep(1500000000)
     go convo(ch2fromus, ch2fromomegle,die2, "Stranger 2")
-    go func(){
-        var john []byte
-        for {
-            f,err := os.Open("./s1", os.O_RDONLY,0)
-            if err != nil { fmt.Printf("%s!\n", err); return }
-            _,err = f.Read(john)
-            if err == nil || err == os.EOF {
-                msg := make([]string, 2)
-                msg[0] = "msg"
-                msg[1] = fmt.Sprint(john)
-                fmt.Printf("Sending message: %s\n", fmt.Sprint(john))
-                ch1fromus<-msg
-            } else {
-                fmt.Printf("err = %s\n", err)
-                return
-            }
-        }
-    }()
-    go func(){
-        var john []byte
-        for {
-            f,err := os.Open("./s2", os.O_RDONLY,0)
-            if err != nil { fmt.Printf("%s!\n", err); return }    
-            _,err = f.Read(john)
-            if err == nil || err == os.EOF {
-                msg := make([]string, 2)
-                msg[0] = "msg"
-                msg[1] = fmt.Sprint(john)
-                fmt.Printf("Sending message: %s\n", fmt.Sprint(john))
-                ch2fromus<-msg
-            } else {
-                fmt.Printf("err = %s\n", err)
-                return
-            }
-        }
-    }()
     go func(){
         for {
         select {
@@ -189,6 +156,31 @@ func eavesdropper(die chan bool) {
         }
         }
     }()
+
+        var john [1024]byte
+        for {
+            n,err := os.Stdin.Read(&john)
+            if err == nil {
+                data := fmt.Sprintf("%s", john[0:n-1])
+                msg := make([]string,2)
+                msg[0] = "msg"
+                msg[1] = data[1:len(data)]
+                if data[0:1] == "1" {
+                    fmt.Printf("Sending to stranger 1: %s\n", msg[1])
+                    ch1fromus<-msg
+                } else if data[0:1] == "2" {
+                    fmt.Printf("Sending to stranger 2: %s\n", msg[1])
+                    ch2fromus<-msg
+                } else {
+                    msg[1]=data
+                    fmt.Printf("Sending to both: %s\n", msg[1])
+                    ch1fromus<-msg
+                    ch2fromus<-msg
+                }
+            } else {
+                fmt.Printf("Stdin.Read error %s\n",err)
+            }
+        }
     
     <-die2
     die<-true
@@ -197,10 +189,8 @@ func eavesdropper(die chan bool) {
 
 func main() {
     die := make(chan  bool)
-    for i:=0; i< numconvos; i++ {
-        go eavesdropper(die)
-    }
-    <-die
+    eavesdropper(die)
+    
     /*
     for {
         <-die
